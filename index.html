@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>B.I.G. Seller Studio</title>
+<style>
+  :root{
+    --ink:#242321; --ink-soft:#3a3835;
+    --paper:#F7F4ED; --card:#ffffff;
+    --gold:#B69A5A; --gold-deep:#8a713d; --gold-soft:#f1e7cf;
+    --coral:#FF6F61; --coral-deep:#c74335;
+    --muted:#8d8577;
+    --radius:22px;
+    --shadow:0 6px 18px rgba(36,35,33,.10);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--paper); color:var(--ink);}
+  .app{max-width:480px; margin:0 auto; padding:18px 16px 110px;}
+  header{display:flex; justify-content:space-between; align-items:flex-start; margin:6px 2px 16px;}
+  header h1{font-size:30px; margin:0; font-weight:800; letter-spacing:-.5px;}
+  header p{margin:4px 0 0; color:var(--muted); font-size:14px;}
+  .bag{width:52px; height:52px; border-radius:16px; background:var(--gold-soft); display:flex; align-items:center; justify-content:center; font-size:24px; flex:none;}
+  .card{background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px; margin-bottom:14px;}
+  .month-card{background:linear-gradient(160deg,#35332f,var(--ink)); color:var(--paper); box-shadow:var(--shadow);}
+  .month-card .goal-amount{font-size:52px; color:var(--gold);}
+  .month-card .goal-sub{color:#d8d2c2;}
+  .month-card .goal-left{color:#d8d2c2;}
+  .month-card .bar{background:rgba(255,255,255,.18);}
+  .month-card .bar > div{background:var(--gold);}
+  .month-card .week-badge{background:var(--gold); color:var(--ink);}
+  .month-card .edit-goal{color:var(--gold);}
+  .weekly-card{background:linear-gradient(160deg,#f5ecd4,var(--gold-soft));}
+  .weekly-card .goal-amount{font-size:30px; margin:6px 0 2px; color:var(--gold-deep);}
+  .weekly-card .bar{height:10px; background:#fff;}
+  .weekly-card .bar > div{background:var(--gold);}
+  .weekly-card .week-badge{background:var(--ink); color:var(--paper);}
+  .goal-top{display:flex; justify-content:space-between; align-items:center;}
+  .goal-label{font-weight:800; font-size:14px; letter-spacing:.6px;}
+  .week-badge{background:var(--gold); color:var(--ink); font-size:12px; font-weight:700; padding:5px 12px; border-radius:999px;}
+  .goal-amount{font-size:42px; font-weight:800; color:var(--gold-deep); margin:10px 0 4px; letter-spacing:-1px;}
+  .goal-sub{display:flex; justify-content:space-between; color:#5f594c; font-size:14px;}
+  .bar{height:14px; background:#efe9da; border-radius:999px; margin:12px 0 10px; overflow:hidden;}
+  .bar > div{height:100%; background:var(--gold); border-radius:999px; width:0%; transition:width .7s ease;}
+  .goal-left{color:#5f594c; font-size:14px;}
+  .edit-goal{background:none; border:none; color:var(--gold-deep); font-weight:700; font-size:13px; cursor:pointer; padding:4px 0;}
+  .chips{display:flex; gap:8px; margin:0 2px 14px; flex-wrap:wrap;}
+  .chip{border:2px solid #e3dac2; background:#fff; color:var(--ink-soft); border-radius:999px; padding:8px 14px; font-size:13px; font-weight:700; cursor:pointer; transition:all .15s ease;}
+  .chip:active{transform:scale(.95);}
+  .chip.active-all{background:var(--ink); border-color:var(--ink); color:var(--paper);}
+  .chip.active-v{background:var(--gold); border-color:var(--gold); color:#fff;}
+  .chip.active-d{background:var(--coral); border-color:var(--coral); color:#fff;}
+  .chip.active-t{background:var(--ink-soft); border-color:var(--ink-soft); color:#fff;}
+  .chip.sm{padding:6px 12px; font-size:12px;}
+  .stat-row{display:flex; gap:12px; margin-bottom:14px;}
+  .stat{flex:1; border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); background:#fff;}
+  .stat .ic{font-size:20px;}
+  .stat .lbl{color:#55504f; font-size:14px; margin-top:6px;}
+  .stat .val{font-size:26px; font-weight:800; margin-top:2px;}
+  .stat.goldt{background:var(--gold-soft);} .stat.goldt .val{color:var(--gold-deep);}
+  .stat.coralt{background:#ffe3df;} .stat.coralt .val{color:var(--coral-deep);}
+  .stat.inkt{background:#e8e4da;} .stat.inkt .val{color:var(--ink);}
+  .break-head{display:flex; justify-content:space-between; align-items:baseline;}
+  .break-head h2{font-size:19px; margin:0;}
+  .break-head span{color:var(--muted); font-size:12px; letter-spacing:1px;}
+  .day{display:flex; align-items:center; gap:10px; padding:9px 0; cursor:pointer; border:none; background:none; width:100%; text-align:left; font:inherit;}
+  .day .d{width:38px; font-size:13px; font-weight:700; color:#6d675a; letter-spacing:.5px;}
+  .day .track{flex:1; display:block; height:14px; background:#f0ebdd; border-radius:999px; overflow:hidden;}
+  .day .fill{display:block; height:100%; background:var(--gold); border-radius:999px; width:0%; transition:width .6s ease;}
+  .day .amt{width:64px; text-align:right; font-weight:600; font-size:15px;}
+  .day.today .d{color:var(--coral-deep);}
+  .break-foot{display:flex; justify-content:space-between; color:var(--muted); font-size:13px; border-top:1px solid #f0ebdd; margin-top:8px; padding-top:12px;}
+  .quick{background:#fff;}
+  .quick h2{font-size:19px; margin:0 0 4px;}
+  .quick p{color:#8a8271; font-size:14px; margin:0 0 14px;}
+  .quick-row{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
+  .quick-row .t{font-size:15px;}
+  .money{background:var(--paper); border-radius:14px; padding:10px 14px; font-weight:800; color:var(--gold-deep); font-size:17px; display:flex; align-items:center; gap:2px;}
+  .money input{border:none; outline:none; font:inherit; color:inherit; width:76px; background:transparent;}
+  .btn{width:100%; border:none; border-radius:16px; padding:15px; font-size:16px; font-weight:700; cursor:pointer; transition:transform .12s ease, background .2s ease;}
+  .btn:active{transform:scale(.97);}
+  .btn-gold{background:var(--gold); color:#fff;}
+  .btn-gold:active{background:var(--gold-deep);}
+  .btn-ghost{background:#fff; color:var(--gold-deep); border:2px solid #e8dfc6;}
+  .weeknav{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;}
+  .weeknav button{background:#fff; border:none; box-shadow:var(--shadow); border-radius:12px; padding:9px 14px; font-weight:700; color:var(--gold-deep); cursor:pointer; font-size:14px; transition:transform .12s ease;}
+  .weeknav button:active{transform:scale(.95);}
+  .weeknav .range{font-weight:700; font-size:14px;}
+  .hidden{display:none !important;}
+  .hist-item{display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid #f3efe2;}
+  .hist-item:last-child{border-bottom:none;}
+  .hist-item .t{font-weight:700;}
+  .hist-item .s{color:var(--muted); font-size:13px;}
+  .mini-bar{height:8px; background:#f0ebdd; border-radius:99px; overflow:hidden; margin-top:6px; width:150px;}
+  .mini-bar > div{height:100%; background:var(--gold);}
+  .clear-btn{background:none; border:none; color:#c0392b; font-weight:700; cursor:pointer; font-size:13px;}
+  .chart{display:flex; align-items:flex-end; gap:8px; height:130px; padding-top:10px;}
+  .chart .col{flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; height:100%; justify-content:flex-end;}
+  .chart .cb{width:100%; max-width:38px; background:var(--gold); border-radius:8px 8px 4px 4px; min-height:4px;}
+  .chart .cl{font-size:11px; color:var(--muted);}
+  .chart .cv{font-size:11px; font-weight:700;}
+  .chan-row{display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid #f3efe2;}
+  .chan-row:last-child{border-bottom:none;}
+  .chan-dot{width:12px; height:12px; border-radius:50%; flex:none;}
+  .chan-row .nm{width:92px; font-weight:700; font-size:14px;}
+  .chan-row .track{flex:1; display:block; height:12px; background:#f0ebdd; border-radius:999px; overflow:hidden;}
+  .chan-row .fill{display:block; height:100%; border-radius:999px; transition:width .6s ease;}
+  .chan-row .amt{width:76px; text-align:right; font-weight:700; font-size:14px;}
+  label.f{display:block; font-size:14px; font-weight:700; margin:14px 0 6px;}
+  input.field{width:100%; padding:13px 14px; border:2px solid #ece4cd; border-radius:14px; font-size:16px; outline:none; background:#fff;}
+  input.field:focus{border-color:var(--gold);}
+  nav{position:fixed; left:0; right:0; bottom:0; background:rgba(247,244,237,.96); border-top:1px solid #ece4cd; backdrop-filter:blur(6px);}
+  nav .inner{max-width:480px; margin:0 auto; display:flex;}
+  nav button{flex:1; background:none; border:none; padding:10px 0 14px; font-size:12px; color:#8a8271; cursor:pointer; font-weight:600;}
+  nav button .ic{display:block; font-size:21px; margin-bottom:2px;}
+  nav button.active{color:var(--gold-deep);}
+  .editor{background:#fdfaf1; border:2px dashed var(--gold); border-radius:16px; padding:14px; margin:6px 0 2px;}
+  .editor .row{display:flex; gap:8px; margin-top:8px;}
+  .editor .row button{flex:1;}
+  .small{font-size:13px; color:var(--muted);}
+
+  /* Animations */
+  @keyframes rise{from{opacity:0; transform:translateY(12px)} to{opacity:1; transform:translateY(0)}}
+  .card, .stat{animation:rise .45s ease both;}
+  .stat-row .stat:nth-child(2){animation-delay:.06s;}
+  @keyframes pop{0%{transform:scale(1)} 40%{transform:scale(1.3)} 100%{transform:scale(1)}}
+  nav button.active .ic{animation:pop .3s ease;}
+  .day{transition:background .2s ease; border-radius:12px;}
+  .day:active{background:#faf5e8;}
+  @keyframes glowPulse{0%,100%{box-shadow:0 6px 18px rgba(36,35,33,.10)} 50%{box-shadow:0 8px 30px rgba(182,154,90,.6)}}
+  .celebrate{animation:glowPulse 1.6s ease-in-out infinite;}
+  .quick{position:relative;}
+  @keyframes floatUp{0%{opacity:0; transform:translateY(0) scale(.6) rotate(0deg)} 15%{opacity:1} 100%{opacity:0; transform:translateY(-72px) scale(1.2) rotate(14deg)}}
+  .burst-heart{position:absolute; bottom:64px; pointer-events:none; font-size:17px; animation:floatUp 1s ease-out forwards; z-index:5;}
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{animation-duration:.001s !important; transition-duration:.001s !important;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HOME -->
+  <section id="view-home">
+    <header>
+      <div>
+        <h1>hello, seller! 👑</h1>
+        <p>B.I.G. Steppas — every channel, one board.</p>
+      </div>
+      <div class="bag">🛍️</div>
+    </header>
+
+    <div class="chips" id="filterChips">
+      <button class="chip active-all" data-filter="all">All channels</button>
+      <button class="chip" data-filter="v">Vinted</button>
+      <button class="chip" data-filter="d">Depop</button>
+    </div>
+
+    <div class="weeknav">
+      <button id="prevWeek">‹ Prev</button>
+      <div class="range" id="weekRange"></div>
+      <button id="nextWeek">Next ›</button>
+    </div>
+
+    <div class="card month-card">
+      <div class="goal-top">
+        <div class="goal-label">THIS MONTH'S GOAL</div>
+        <div class="week-badge" id="monthBadge">Month</div>
+      </div>
+      <div class="goal-amount" id="mGoalAmount">$0.00</div>
+      <div class="goal-sub"><span id="mSalesSoFar">Sales so far: $0.00</span><span id="mPct">0%</span></div>
+      <div class="bar"><div id="mGoalBar"></div></div>
+      <div class="goal-left" id="mGoalLeft"></div>
+      <button class="edit-goal" id="editMGoalBtn">✎ Edit this month's goal</button>
+      <div class="editor hidden" id="mGoalEditor">
+        <label class="f" style="margin-top:0">Goal for this month ($)</label>
+        <input class="field" id="mGoalInput" type="number" min="0" step="0.01" inputmode="decimal">
+        <div class="row">
+          <button class="btn btn-gold" id="mGoalSave">Save goal</button>
+          <button class="btn btn-ghost" id="mGoalCancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card weekly-card">
+      <div class="goal-top">
+        <div class="goal-label">THIS WEEK'S GOAL</div>
+        <div class="week-badge" id="weekBadge">Week 01</div>
+      </div>
+      <div class="goal-amount" id="goalAmount">$0.00</div>
+      <div class="goal-sub"><span id="salesSoFar">Sales so far: $0.00</span><span id="pct">0%</span></div>
+      <div class="bar"><div id="goalBar"></div></div>
+      <div class="goal-left" id="goalLeft"></div>
+      <button class="edit-goal" id="editGoalBtn">✎ Edit this week's goal</button>
+      <div class="editor hidden" id="goalEditor">
+        <label class="f" style="margin-top:0">Goal for this week ($)</label>
+        <input class="field" id="goalInput" type="number" min="0" step="0.01" inputmode="decimal">
+        <div class="row">
+          <button class="btn btn-gold" id="goalSave">Save goal</button>
+          <button class="btn btn-ghost" id="goalCancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat goldt"><div class="ic">💸</div><div class="lbl">Weekly sales</div><div class="val" id="weeklySales">$0.00</div></div>
+      <div class="stat coralt"><div class="ic">📈</div><div class="lbl">Daily average</div><div class="val" id="dailyAvg">$0.00</div></div>
+    </div>
+    <div class="stat-row">
+      <div class="stat inkt"><div class="ic">📅</div><div class="lbl">Sales days</div><div class="val" id="salesDays">0 / 7</div></div>
+      <div class="stat goldt"><div class="ic">🗓️</div><div class="lbl">Monthly sales</div><div class="val" id="monthlySales">$0.00</div></div>
+    </div>
+
+    <div class="card">
+      <div class="break-head"><h2>Your weekly breakdown</h2><span>SUN — SAT</span></div>
+      <div id="days"></div>
+      <div class="editor hidden" id="dayEditor">
+        <label class="f" style="margin-top:0" id="dayEditorLabel">Day sales</label>
+        <label class="f">Vinted ($)</label>
+        <input class="field" id="dayV" type="number" min="0" step="0.01" inputmode="decimal" placeholder="—">
+        <label class="f">Depop ($)</label>
+        <input class="field" id="dayD" type="number" min="0" step="0.01" inputmode="decimal" placeholder="—">
+        <div class="row">
+          <button class="btn btn-gold" id="daySave">Save</button>
+          <button class="btn btn-ghost" id="dayClear">Clear day</button>
+          <button class="btn btn-ghost" id="dayCancel">Cancel</button>
+        </div>
+      </div>
+      <div class="break-foot"><span>7-day sales tracker</span><span id="breakFootRight">Tap a day to edit</span></div>
+      <button class="edit-goal" id="editDGoalBtn">✎ Edit daily goal</button>
+      <div class="editor hidden" id="dGoalEditor">
+        <label class="f" style="margin-top:0">Daily goal ($)</label>
+        <input class="field" id="dGoalInput" type="number" min="0" step="0.01" inputmode="decimal">
+        <div class="row">
+          <button class="btn btn-gold" id="dGoalSave">Save goal</button>
+          <button class="btn btn-ghost" id="dGoalCancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card quick">
+      <h2>Quick daily entry 💰</h2>
+      <p>Pick the channel, drop the sale, watch the board move.</p>
+      <div class="chips" id="entryChips" style="margin:0 0 12px">
+        <button class="chip sm active-v" data-ch="v">Vinted</button>
+        <button class="chip sm" data-ch="d">Depop</button>
+      </div>
+      <div class="quick-row"><span class="t">Today's sales</span>
+        <span class="money">$ <input id="todayInput" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></span>
+      </div>
+      <button class="btn btn-gold" id="addToday">+ Add daily sales</button>
+      <p class="small" id="todayNote" style="margin:10px 0 0"></p>
+    </div>
+  </section>
+
+  <!-- WEEKS -->
+  <section id="view-weeks" class="hidden">
+    <header><div><h1>Weeks 📅</h1><p>Every week you've tracked, all channels combined.</p></div><div class="bag">👑</div></header>
+    <div class="card" id="weeksList"></div>
+  </section>
+
+  <!-- INSIGHTS -->
+  <section id="view-insights" class="hidden">
+    <header><div><h1>Insights 📊</h1><p>Your shops, by the numbers.</p></div><div class="bag">✨</div></header>
+    <div class="stat-row">
+      <div class="stat goldt"><div class="ic">💰</div><div class="lbl">All-time sales</div><div class="val" id="insTotal">$0.00</div></div>
+      <div class="stat coralt"><div class="ic">🎯</div><div class="lbl">Goals reached</div><div class="val" id="insGoals">0</div></div>
+    </div>
+    <div class="stat-row">
+      <div class="stat inkt"><div class="ic">🏆</div><div class="lbl">Best week</div><div class="val" id="insBestWeek" style="font-size:20px">—</div></div>
+      <div class="stat goldt"><div class="ic">🌟</div><div class="lbl">Best single day</div><div class="val" id="insBestDay" style="font-size:20px">—</div></div>
+    </div>
+    <div class="card">
+      <div class="break-head"><h2>By channel</h2><span>ALL TIME</span></div>
+      <div id="insChannels"></div>
+    </div>
+    <div class="card">
+      <div class="break-head"><h2>Weekly totals</h2><span>LAST 8 WEEKS</span></div>
+      <div class="chart" id="insChart"></div>
+    </div>
+    <div class="card">
+      <div class="break-head"><h2>Monthly totals</h2><span>LAST 6 MONTHS</span></div>
+      <div id="insMonths"></div>
+    </div>
+    <div class="card">
+      <div class="break-head"><h2>Money day</h2></div>
+      <p id="insWeekday" style="margin:8px 0 0">No sales logged yet — your strongest day will show up here. 👑</p>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="view-settings" class="hidden">
+    <header><div><h1>Settings ⚙️</h1><p>Make the studio yours.</p></div><div class="bag">🎀</div></header>
+    <div class="card">
+      <div class="break-head"><h2>Danger zone</h2></div>
+      <p class="small">Erase every week and start fresh. This can't be undone.</p>
+      <button class="btn btn-ghost" id="clearAll" style="color:#c0392b; border-color:#f0c4c4">Clear all data</button>
+    </div>
+  </section>
+</div>
+
+<nav><div class="inner">
+  <button data-view="home" class="active"><span class="ic">🏠</span>Home</button>
+  <button data-view="weeks"><span class="ic">📅</span>Weeks</button>
+  <button data-view="insights"><span class="ic">📊</span>Insights</button>
+  <button data-view="settings"><span class="ic">⚙️</span>Settings</button>
+</div></nav>
+
+<script>
+const KEY = 'bigSellerStudio.v1';
+const DAY_NAMES = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+const DAY_FULL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const CHANNELS = [
+  {k:'v', name:'Vinted', color:'#B69A5A'},
+  {k:'d', name:'Depop', color:'#FF6F61'}
+];
+const CH_NAME = {v:'Vinted', d:'Depop'};
+const money = n => '$' + (Math.round(n*100)/100).toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2});
+
+function load(){
+  try{ return JSON.parse(localStorage.getItem(KEY)) || null; }catch(e){ return null; }
+}
+function freshDay(){ return {v:null, d:null}; }
+function freshState(){ return { defaultGoal: 500, defaultMonthlyGoal: 2000, defaultDailyGoal: 75, weeks: {}, months: {} }; }
+let state = load() || freshState();
+if(state.defaultMonthlyGoal === undefined) state.defaultMonthlyGoal = 2000;
+if(state.defaultDailyGoal === undefined) state.defaultDailyGoal = 75;
+if(!state.months) state.months = {};
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+
+let filter = 'all';       // 'all' | 'v' | 'd' | 't'
+let entryChannel = 'v';
+
+function daySum(day, f){
+  if(!day) return 0;
+  if(f === 'all') return (day.v||0) + (day.d||0);
+  return day[f] || 0;
+}
+function dayEmpty(day, f){
+  if(!day) return true;
+  if(f === 'all') return day.v === null && day.d === null;
+  return day[f] === null;
+}
+
+function sundayOf(d){
+  const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  x.setDate(x.getDate() - x.getDay());
+  return x;
+}
+function keyOf(d){ return d.toISOString().slice(0,10); }
+function weekKey(offset){
+  const s = sundayOf(new Date());
+  s.setDate(s.getDate() + offset*7);
+  return keyOf(s);
+}
+let viewOffset = 0;
+
+function getWeek(offset){
+  const k = weekKey(offset);
+  if(!state.weeks[k]) state.weeks[k] = { goal: state.defaultGoal, days: [freshDay(),freshDay(),freshDay(),freshDay(),freshDay(),freshDay(),freshDay()] };
+  return state.weeks[k];
+}
+function weekTotal(w, f){ return w.days.reduce((a,day)=>a+daySum(day,f),0); }
+function monthKeyOf(d){ return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'); }
+function viewedMonthKey(){
+  const s = sundayOf(new Date()); s.setDate(s.getDate() + viewOffset*7);
+  return monthKeyOf(s);
+}
+function getMonthGoal(mk){
+  if(state.months[mk] && state.months[mk].goal !== undefined) return state.months[mk].goal;
+  return state.defaultMonthlyGoal;
+}
+function monthTotal(mk, f){
+  let t = 0;
+  Object.keys(state.weeks).forEach(k=>{
+    const s = new Date(k + 'T12:00:00');
+    state.weeks[k].days.forEach((day,i)=>{
+      const v = daySum(day, f);
+      if(!v) return;
+      const d = new Date(s); d.setDate(d.getDate()+i);
+      if(monthKeyOf(d) === mk) t += v;
+    });
+  });
+  return t;
+}
+function channelTotal(k){
+  let t = 0;
+  Object.values(state.weeks).forEach(w=> w.days.forEach(day=>{ t += (day && day[k]) || 0; }));
+  return t;
+}
+function fmtRange(offset){
+  const s = sundayOf(new Date()); s.setDate(s.getDate()+offset*7);
+  const e = new Date(s); e.setDate(e.getDate()+6);
+  const f = d => d.toLocaleDateString('en-US',{month:'short', day:'numeric'});
+  return f(s) + ' – ' + f(e);
+}
+function weekNumber(k){
+  const keys = Object.keys(state.weeks).sort();
+  const i = keys.indexOf(k);
+  return i >= 0 ? i+1 : keys.length+1;
+}
+
+let editDay = null;
+
+function render(){
+  const w = getWeek(viewOffset);
+  const total = weekTotal(w, filter);
+  const goal = w.goal || 0;
+  const pct = goal > 0 ? Math.min(100, total/goal*100) : 0;
+  const left = Math.max(0, goal - total);
+  const daysWith = w.days.filter(day => daySum(day, filter) > 0).length;
+  const scope = filter === 'all' ? '' : ' · ' + CH_NAME[filter];
+
+  document.getElementById('weekRange').textContent =
+    (viewOffset===0 ? 'This week · ' : viewOffset===-1 ? 'Last week · ' : '') + fmtRange(viewOffset);
+  document.getElementById('weekBadge').textContent = 'Week ' + String(weekNumber(weekKey(viewOffset))).padStart(2,'0');
+  document.getElementById('goalAmount').textContent = money(goal);
+  document.getElementById('salesSoFar').textContent = 'Sales so far: ' + money(total) + scope;
+  document.getElementById('pct').textContent = (Math.round(pct*10)/10) + '%';
+  document.getElementById('goalBar').style.width = pct + '%';
+  document.getElementById('goalLeft').innerHTML = goal === 0
+    ? 'Set a goal for this week 👑'
+    : (left > 0 ? money(left) + ' left to reach your goal 👑' : 'Goal reached — big steppa work! 🎉👑');
+  document.getElementById('weeklySales').textContent = money(total);
+  document.getElementById('dailyAvg').textContent = money(total/7);
+  document.getElementById('salesDays').textContent = daysWith + ' / 7';
+  document.querySelector('.weekly-card').classList.toggle('celebrate', goal > 0 && weekTotal(w,'all') >= goal);
+
+  const mk = viewedMonthKey();
+  const mTotal = monthTotal(mk, filter);
+  const mGoal = getMonthGoal(mk);
+  const mPct = mGoal > 0 ? Math.min(100, mTotal/mGoal*100) : 0;
+  const mLeft = Math.max(0, mGoal - mTotal);
+  const mDate = new Date(mk + '-15T12:00:00');
+  document.getElementById('monthBadge').textContent = mDate.toLocaleDateString('en-US',{month:'short', year:'numeric'});
+  document.getElementById('mGoalAmount').textContent = money(mGoal);
+  document.getElementById('mSalesSoFar').textContent = 'Sales so far: ' + money(mTotal) + scope;
+  document.getElementById('mPct').textContent = (Math.round(mPct*10)/10) + '%';
+  document.getElementById('mGoalBar').style.width = mPct + '%';
+  document.getElementById('mGoalLeft').innerHTML = mGoal === 0
+    ? 'Set a goal for this month 👑'
+    : (mLeft > 0 ? money(mLeft) + ' left to reach your goal 👑' : 'Monthly goal reached — incredible! 🎉👑');
+  document.getElementById('monthlySales').textContent = money(mTotal);
+  document.querySelector('.month-card').classList.toggle('celebrate', mGoal > 0 && monthTotal(mk,'all') >= mGoal);
+
+  const todayIdx = (viewOffset===0) ? new Date().getDay() : -1;
+  const dailyGoal = state.defaultDailyGoal || 0;
+  const wrap = document.getElementById('days');
+  wrap.innerHTML = '';
+  w.days.forEach((day,i)=>{
+    const v = daySum(day, filter);
+    const empty = dayEmpty(day, filter);
+    const pctFill = dailyGoal > 0 ? Math.min(100, v/dailyGoal*100) : 0;
+    const b = document.createElement('button');
+    b.className = 'day' + (i===todayIdx ? ' today' : '');
+    const fillColor = filter === 'all' ? 'var(--gold)' : CHANNELS.find(c=>c.k===filter).color;
+    b.innerHTML = '<span class="d">'+DAY_NAMES[i]+'</span><span class="track"><span class="fill" style="width:'+pctFill+'%; background:'+fillColor+'"></span></span><span class="amt">'+(empty?'—':money(v).replace('.00',''))+'</span>';
+    b.onclick = ()=> openDayEditor(i);
+    wrap.appendChild(b);
+  });
+  document.getElementById('breakFootRight').textContent = dailyGoal > 0
+    ? ('Bars fill toward ' + money(dailyGoal) + ' / day' + scope)
+    : 'Tap a day to edit';
+  document.getElementById('todayNote').textContent =
+    'Adds to ' + DAY_FULL[new Date().getDay()] + ' on ' + CH_NAME[entryChannel] + (viewOffset===0 ? '' : ' of the current week — switch back to This week to use quick entry') + '.';
+  document.getElementById('addToday').disabled = viewOffset!==0;
+  document.getElementById('addToday').style.opacity = viewOffset===0 ? '1' : '.5';
+  renderWeeks(); renderInsights();
+  save();
+}
+
+function openDayEditor(i){
+  editDay = i;
+  const w = getWeek(viewOffset);
+  const day = w.days[i];
+  document.getElementById('dayEditorLabel').textContent = DAY_FULL[i] + ' sales — by channel';
+  document.getElementById('dayV').value = day.v === null ? '' : day.v;
+  document.getElementById('dayD').value = day.d === null ? '' : day.d;
+  document.getElementById('dayEditor').classList.remove('hidden');
+}
+document.getElementById('daySave').onclick = ()=>{
+  if(editDay === null) return;
+  const w = getWeek(viewOffset);
+  const read = id => { const v = parseFloat(document.getElementById(id).value); return (isNaN(v) || v < 0) ? null : v; };
+  w.days[editDay] = { v: read('dayV'), d: read('dayD') };
+  document.getElementById('dayEditor').classList.add('hidden');
+  render();
+};
+document.getElementById('dayClear').onclick = ()=>{
+  if(editDay === null) return;
+  const w = getWeek(viewOffset);
+  w.days[editDay] = freshDay();
+  document.getElementById('dayEditor').classList.add('hidden');
+  render();
+};
+document.getElementById('dayCancel').onclick = ()=> document.getElementById('dayEditor').classList.add('hidden');
+
+document.getElementById('editGoalBtn').onclick = ()=>{
+  document.getElementById('goalInput').value = getWeek(viewOffset).goal;
+  document.getElementById('goalEditor').classList.remove('hidden');
+  document.getElementById('goalInput').focus();
+};
+document.getElementById('goalSave').onclick = ()=>{
+  const v = parseFloat(document.getElementById('goalInput').value);
+  if(!isNaN(v) && v >= 0) getWeek(viewOffset).goal = v;
+  document.getElementById('goalEditor').classList.add('hidden');
+  render();
+};
+document.getElementById('goalCancel').onclick = ()=> document.getElementById('goalEditor').classList.add('hidden');
+
+document.getElementById('editMGoalBtn').onclick = ()=>{
+  document.getElementById('mGoalInput').value = getMonthGoal(viewedMonthKey());
+  document.getElementById('mGoalEditor').classList.remove('hidden');
+  document.getElementById('mGoalInput').focus();
+};
+document.getElementById('mGoalSave').onclick = ()=>{
+  const v = parseFloat(document.getElementById('mGoalInput').value);
+  const mk = viewedMonthKey();
+  if(!isNaN(v) && v >= 0){ if(!state.months[mk]) state.months[mk] = {}; state.months[mk].goal = v; }
+  document.getElementById('mGoalEditor').classList.add('hidden');
+  render();
+};
+document.getElementById('mGoalCancel').onclick = ()=> document.getElementById('mGoalEditor').classList.add('hidden');
+
+document.getElementById('editDGoalBtn').onclick = ()=>{
+  document.getElementById('dGoalInput').value = state.defaultDailyGoal;
+  document.getElementById('dGoalEditor').classList.remove('hidden');
+  document.getElementById('dGoalInput').focus();
+};
+document.getElementById('dGoalSave').onclick = ()=>{
+  const v = parseFloat(document.getElementById('dGoalInput').value);
+  if(!isNaN(v) && v >= 0) state.defaultDailyGoal = v;
+  document.getElementById('dGoalEditor').classList.add('hidden');
+  render();
+};
+document.getElementById('dGoalCancel').onclick = ()=> document.getElementById('dGoalEditor').classList.add('hidden');
+
+document.querySelectorAll('#filterChips .chip').forEach(ch=>{
+  ch.onclick = ()=>{
+    filter = ch.dataset.filter;
+    document.querySelectorAll('#filterChips .chip').forEach(x=>{
+      x.className = 'chip' + (x.dataset.filter === filter ? ' active-' + filter : '');
+    });
+    render();
+  };
+});
+document.querySelectorAll('#entryChips .chip').forEach(ch=>{
+  ch.onclick = ()=>{
+    entryChannel = ch.dataset.ch;
+    document.querySelectorAll('#entryChips .chip').forEach(x=>{
+      x.className = 'chip sm' + (x.dataset.ch === entryChannel ? ' active-' + entryChannel : '');
+    });
+    render();
+  };
+});
+
+function spawnHearts(){
+  const card = document.querySelector('.quick');
+  if(!card) return;
+  for(let k=0; k<6; k++){
+    const s = document.createElement('span');
+    s.className = 'burst-heart';
+    s.textContent = ['💰','👑','✨'][k % 3];
+    s.style.left = (18 + Math.random()*64) + '%';
+    s.style.animationDelay = (k * 0.07) + 's';
+    card.appendChild(s);
+    setTimeout(()=> s.remove(), 1400);
+  }
+}
+
+document.getElementById('addToday').onclick = ()=>{
+  const v = parseFloat(document.getElementById('todayInput').value);
+  if(isNaN(v) || v <= 0) return;
+  const w = getWeek(0);
+  const i = new Date().getDay();
+  w.days[i][entryChannel] = (w.days[i][entryChannel] || 0) + v;
+  document.getElementById('todayInput').value = '';
+  viewOffset = 0;
+  render();
+  spawnHearts();
+};
+document.getElementById('prevWeek').onclick = ()=>{ viewOffset--; document.getElementById('dayEditor').classList.add('hidden'); render(); };
+document.getElementById('nextWeek').onclick = ()=>{ viewOffset++; document.getElementById('dayEditor').classList.add('hidden'); render(); };
+
+function renderWeeks(){
+  const el = document.getElementById('weeksList');
+  const keys = Object.keys(state.weeks).sort().reverse();
+  if(!keys.length){ el.innerHTML = '<p class="small">No weeks yet — your history builds as you log sales.</p>'; return; }
+  el.innerHTML = '';
+  keys.forEach(k=>{
+    const w = state.weeks[k];
+    const t = weekTotal(w, 'all');
+    const g = w.goal || 0;
+    const p = g > 0 ? Math.min(100, t/g*100) : 0;
+    const s = new Date(k + 'T12:00:00');
+    const e = new Date(s); e.setDate(e.getDate()+6);
+    const f = d => d.toLocaleDateString('en-US',{month:'short', day:'numeric'});
+    const row = document.createElement('div');
+    row.className = 'hist-item';
+    row.innerHTML = '<div><div class="t">Week ' + String(weekNumber(k)).padStart(2,'0') + ' · ' + f(s) + ' – ' + f(e) + '</div>' +
+      '<div class="s">' + money(t) + ' of ' + money(g) + ' goal · ' + (Math.round(p*10)/10) + '%</div>' +
+      '<div class="mini-bar"><div style="width:'+p+'%"></div></div></div>' +
+      (k === weekKey(0) ? '' : '<button class="clear-btn" data-del="'+k+'">Delete</button>');
+    el.appendChild(row);
+  });
+  el.querySelectorAll('[data-del]').forEach(b=>{
+    b.onclick = ()=>{
+      if(confirm('Delete this week? This cannot be undone.')){
+        delete state.weeks[b.dataset.del];
+        render();
+      }
+    };
+  });
+}
+
+function renderInsights(){
+  const keys = Object.keys(state.weeks).sort();
+  let total = 0, goalsHit = 0, bestWeek = 0, bestDay = 0;
+  const byWeekday = [0,0,0,0,0,0,0];
+  keys.forEach(k=>{
+    const w = state.weeks[k];
+    const t = weekTotal(w, 'all');
+    total += t;
+    if(w.goal > 0 && t >= w.goal) goalsHit++;
+    if(t > bestWeek) bestWeek = t;
+    w.days.forEach((day,i)=>{
+      const v = daySum(day, 'all');
+      byWeekday[i] += v;
+      if(v > bestDay) bestDay = v;
+    });
+  });
+  document.getElementById('insTotal').textContent = money(total);
+  document.getElementById('insGoals').textContent = goalsHit;
+  document.getElementById('insBestWeek').textContent = bestWeek > 0 ? money(bestWeek) : '—';
+  document.getElementById('insBestDay').textContent = bestDay > 0 ? money(bestDay) : '—';
+
+  const cEl = document.getElementById('insChannels');
+  cEl.innerHTML = '';
+  const cTotals = CHANNELS.map(c => ({...c, total: channelTotal(c.k)}));
+  const maxC = Math.max(1, ...cTotals.map(c=>c.total));
+  cTotals.forEach(c=>{
+    const row = document.createElement('div');
+    row.className = 'chan-row';
+    row.innerHTML = '<span class="chan-dot" style="background:'+c.color+'"></span><span class="nm">'+c.name+'</span>' +
+      '<span class="track"><span class="fill" style="width:'+(c.total/maxC*100)+'%; background:'+c.color+'"></span></span>' +
+      '<span class="amt">'+money(c.total)+'</span>';
+    cEl.appendChild(row);
+  });
+
+  const chart = document.getElementById('insChart');
+  chart.innerHTML = '';
+  const last8 = keys.slice(-8);
+  const maxT = Math.max(1, ...last8.map(k=>weekTotal(state.weeks[k],'all')));
+  if(!last8.length) chart.innerHTML = '<p class="small">No weeks yet.</p>';
+  last8.forEach(k=>{
+    const t = weekTotal(state.weeks[k],'all');
+    const col = document.createElement('div');
+    col.className = 'col';
+    col.innerHTML = '<span class="cv">'+(t>0?money(t).replace('.00',''):'')+'</span><div class="cb" style="height:'+Math.max(4, t/maxT*100)+'%"></div><span class="cl">W'+weekNumber(k)+'</span>';
+    chart.appendChild(col);
+  });
+
+  const mEl = document.getElementById('insMonths');
+  mEl.innerHTML = '';
+  const now = new Date();
+  for(let n=5; n>=0; n--){
+    const d = new Date(now.getFullYear(), now.getMonth()-n, 15);
+    const mk = monthKeyOf(d);
+    const t = monthTotal(mk, 'all');
+    const g = getMonthGoal(mk);
+    const p = g > 0 ? Math.min(100, t/g*100) : 0;
+    const row = document.createElement('div');
+    row.className = 'hist-item';
+    row.innerHTML = '<div><div class="t">' + d.toLocaleDateString('en-US',{month:'long', year:'numeric'}) + '</div>' +
+      '<div class="s">' + money(t) + ' of ' + money(g) + ' goal · ' + (Math.round(p*10)/10) + '%</div>' +
+      '<div class="mini-bar"><div style="width:'+p+'%"></div></div></div>';
+    mEl.appendChild(row);
+  }
+  const maxWd = Math.max(...byWeekday);
+  document.getElementById('insWeekday').innerHTML = maxWd > 0
+    ? '<strong>' + DAY_FULL[byWeekday.indexOf(maxWd)] + '</strong> is your money day — ' + money(maxWd) + ' sold across all weeks. 👑'
+    : 'No sales logged yet — your strongest day will show up here. 👑';
+}
+
+document.getElementById('clearAll').onclick = ()=>{
+  if(confirm('Erase ALL weeks and settings? This cannot be undone.')){
+    state = freshState(); localStorage.removeItem(KEY); viewOffset = 0; render();
+  }
+};
+
+document.querySelectorAll('nav button').forEach(b=>{
+  b.onclick = ()=>{
+    document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    ['home','weeks','insights','settings'].forEach(v=>{
+      document.getElementById('view-'+v).classList.toggle('hidden', v !== b.dataset.view);
+    });
+    window.scrollTo(0,0);
+    document.querySelectorAll('#view-' + b.dataset.view + ' .card, #view-' + b.dataset.view + ' .stat').forEach(el=>{
+      el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
+    });
+  };
+});
+
+render();
+</script>
+</body>
+</html>
